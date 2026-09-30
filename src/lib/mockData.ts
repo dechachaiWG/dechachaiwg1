@@ -1,0 +1,98 @@
+import { Room, Booking } from './types';
+import { addDays, setHours, setMinutes, formatISO } from 'date-fns';
+
+const today = new Date();
+
+export const INITIAL_ROOMS: Room[] = [
+  {
+    id: 'room-1',
+    name: 'Executive Boardroom A',
+    capacity: 12,
+    location: 'ชั้น 4, ฝั่งตะวันออก',
+    amenities: ['4K Smart Display', 'Video Conference', 'Whiteboard', 'Coffee Machine'],
+    description: 'ห้องประชุมขนาดใหญ่ เหมาะสำหรับการประชุมผู้บริหาร การนำเสนอขายงาน หรือสัมมนาทีมใหญ่',
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+  },
+  {
+    id: 'room-2',
+    name: 'Creative Brainstorming Pod',
+    capacity: 6,
+    location: 'ชั้น 3, ฝั่ง Creative Hub',
+    amenities: ['Interactive Touchscreen', 'Glass Board', 'Ergonomic Chairs'],
+    description: 'บรรยากาศสบายๆ กระตุ้นความคิดสร้างสรรค์ เหมาะสำหรับทีม Product, Design หรือ Sprint Planning',
+    image: 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+  },
+  {
+    id: 'room-3',
+    name: 'Quiet Focus Studio B',
+    capacity: 4,
+    location: 'ชั้น 2, Quiet Zone',
+    amenities: ['Acoustic Soundproofing', 'Dual Monitors', 'High-Speed Wi-Fi'],
+    description: 'ห้องเงียบสงบกันเสียงรบกวน 100% เหมาะสัมภาษณ์งาน คุยกับลูกค้าสำคัญ หรือประชุมทางไกล',
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+  },
+  {
+    id: 'room-4',
+    name: 'Townhall & Workshop Hall',
+    capacity: 30,
+    location: 'ชั้น 1, Main Lobby',
+    amenities: ['Projector & Dual Screens', 'Wireless Mics', 'Flexible Seating'],
+    description: 'พื้นที่อเนกประสงค์ขนาดใหญ่สำหรับจัดอบรม All-Hands Meeting หรือเปิดตัวผลิตภัณฑ์',
+    image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+  },
+];
+
+export const INITIAL_BOOKINGS: Booking[] = [
+  {
+    id: 'b-101',
+    roomId: 'room-1',
+    title: 'Q3 Product Strategy Sync',
+    bookerName: 'คุณสมชาย ใจดี',
+    bookerEmail: 'somchai@company.com',
+    startTime: formatISO(setMinutes(setHours(today, 10), 0)),
+    endTime: formatISO(setMinutes(setHours(today, 11), 30)),
+    status: 'confirmed',
+    notes: 'ต้องการไมโครโฟนไร้สายเพิ่มเติม 2 ตัว',
+    createdAt: formatISO(addDays(today, -2)),
+  },
+  {
+    id: 'b-102',
+    roomId: 'room-1',
+    title: 'Client Demo & Pitching',
+    bookerName: 'คุณณัฐพงษ์ วงศ์สวัสดิ์',
+    bookerEmail: 'nattapong@techfirm.co.th',
+    startTime: formatISO(setMinutes(setHours(today, 14), 0)),
+    endTime: formatISO(setMinutes(setHours(today, 15), 30)),
+    status: 'confirmed',
+    notes: 'ต้อนรับแขกภายนอก 5 ท่าน',
+    createdAt: formatISO(addDays(today, -1)),
+  },
+  {
+    id: 'b-103',
+    roomId: 'room-2',
+    title: 'UX/UI Sprint Review',
+    bookerName: 'คุณอนันต์ สุขเสริฐ',
+    bookerEmail: 'anan@designstudio.com',
+    startTime: formatISO(setMinutes(setHours(today, 9), 30)),
+    endTime: formatISO(setMinutes(setHours(today, 11), 0)),
+    status: 'confirmed',
+    notes: 'เตรียมกระดาษ Post-it และปากกาเคมี',
+    createdAt: formatISO(today),
+  },
+  {
+    id: 'b-104',
+    roomId: 'room-3',
+    title: 'Candidate Interview Round 2',
+    bookerName: 'คุณกานดา พรหมเทพ (HR)',
+    bookerEmail: 'kanda@company.com',
+    startTime: formatISO(setMinutes(setHours(today, 13), 0)),
+    endTime: formatISO(setMinutes(setHours(today, 14), 0)),
+    status: 'confirmed',
+    notes: '',
+    createdAt: formatISO(today),
+  },
+];
