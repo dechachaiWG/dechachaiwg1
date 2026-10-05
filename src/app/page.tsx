@@ -216,12 +216,12 @@ export default function Home() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-stone-100/60 dark:bg-slate-950 text-stone-900 dark:text-slate-100 font-sans antialiased pb-16 transition-colors duration-200">
+    <div className="min-h-screen bg-stone-100/60 dark:bg-slate-950 text-stone-900 dark:text-slate-100 font-sans antialiased pb-24 md:pb-16 transition-colors duration-200">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 dark:bg-slate-800 text-white text-xs font-medium px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-slate-700 flex items-center gap-2 animate-bounce">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-stone-900 dark:bg-slate-800 text-white text-xs font-medium px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-slate-700 flex items-center gap-2 animate-bounce max-w-[90vw]">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <span className="truncate">{toastMessage}</span>
         </div>
       )}
 
@@ -238,7 +238,7 @@ export default function Home() {
       />
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         {/* TAB 1: Booking Schedule */}
         {activeTab === 'booking' && (
           <div className="space-y-6">

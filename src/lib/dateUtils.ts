@@ -15,6 +15,24 @@ import { th } from 'date-fns/locale';
 import { Booking, TimeSlot, ConflictCheckResult } from './types';
 
 /**
+ * ดึงเวลาปัจจุบันโดยอิงตามโซนเวลาประเทศไทย (Asia/Bangkok, UTC+7)
+ */
+export function getThailandNow(): Date {
+  const now = new Date();
+  const bkkStr = now.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' });
+  return new Date(bkkStr);
+}
+
+/**
+ * แปลง Date หรือ ISO string ให้เป็น Date Object ในระบบเวลาประเทศไทย
+ */
+export function toThailandDate(date: Date | string): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  const bkkStr = d.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' });
+  return new Date(bkkStr);
+}
+
+/**
  * สมการตรวจสอบช่วงเวลาซ้อนทับกัน (Time Overlap Prevention Engine)
  * (StartA < EndB) AND (EndA > StartB)
  */
@@ -37,8 +55,17 @@ export function validateBookingConflict(
   existingBookings: Booking[],
   excludeBookingId?: string
 ): ConflictCheckResult {
-  const newStart = parseISO(newStartISO);
-  const newEnd = parseISO(newEndISO);
+  const bkkNow = getThailandNow();
+  const newStart = toThailandDate(newStartISO);
+  const newEnd = toThailandDate(newEndISO);
+
+  // ตรวจสอบว่าช่วงเวลาเริ่มต้นอยู่ในอดีตหรือไม่ (อิงตามเวลาประเทศไทย)
+  if (isBefore(newStart, bkkNow)) {
+    return {
+      hasConflict: true,
+      message: 'ไม่สามารถเลือกช่วงเวลาในอดีตได้ครับ กรุณาเลือกช่วงเวลาปัจจุบันหรืออนาคต',
+    };
+  }
 
   // ตรวจสอบว่าเวลาจบต้องหลังเวลาเริ่ม
   if (!isBefore(newStart, newEnd)) {
@@ -57,8 +84,8 @@ export function validateBookingConflict(
   );
 
   for (const booking of roomBookings) {
-    const existingStart = parseISO(booking.startTime);
-    const existingEnd = parseISO(booking.endTime);
+    const existingStart = toThailandDate(booking.startTime);
+    const existingEnd = toThailandDate(booking.endTime);
 
     if (checkTimeOverlap(newStart, newEnd, existingStart, existingEnd)) {
       const formattedStart = format(existingStart, 'HH:mm');
@@ -78,7 +105,7 @@ export function validateBookingConflict(
 }
 
 /**
- * คำนวณสร้าง Time Slots สำหรับวันและห้องที่เลือก
+ * คำนวณสร้าง Time Slots สำหรับวันและห้องที่เลือก (อิงตามเวลาประเทศไทย)
  */
 export function generateDayTimeSlots(
   selectedDate: Date,
@@ -89,14 +116,15 @@ export function generateDayTimeSlots(
   slotDurationMinutes: number = 30
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
-  const now = new Date();
+  const bkkNow = getThailandNow();
+  const bkkSelected = toThailandDate(selectedDate);
 
   // สร้างจุดเริ่มต้นของวัน ณ เวลา startHour:00
   let currentSlotStart = setMilliseconds(
-    setSeconds(setMinutes(setHours(selectedDate, startHour), 0), 0),
+    setSeconds(setMinutes(setHours(bkkSelected, startHour), 0), 0),
     0
   );
-  const dayEndThreshold = setHours(selectedDate, endHour);
+  const dayEndThreshold = setHours(bkkSelected, endHour);
 
   // กรองการจองของห้องนี้
   const roomBookings = existingBookings.filter(
@@ -108,13 +136,13 @@ export function generateDayTimeSlots(
     const slotStartISO = currentSlotStart.toISOString();
     const slotEndISO = currentSlotEnd.toISOString();
 
-    // เช็กว่า slot นี้ผ่านไปแล้วหรือไม่
-    const isPast = isBefore(currentSlotEnd, now);
+    // เช็กว่า slot นี้เริ่มก่อนเวลาปัจจุบันในประเทศไทยหรือไม่ (ถ้าใช่ ถือว่าผ่านไปแล้ว)
+    const isPast = isBefore(currentSlotStart, bkkNow);
 
     // เช็กว่า slot นี้ตรงกับช่วงเวลาการจองใดหรือไม่
     const matchedBooking = roomBookings.find((b) => {
-      const bStart = parseISO(b.startTime);
-      const bEnd = parseISO(b.endTime);
+      const bStart = toThailandDate(b.startTime);
+      const bEnd = toThailandDate(b.endTime);
       return checkTimeOverlap(currentSlotStart, currentSlotEnd, bStart, bEnd);
     });
 

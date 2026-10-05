@@ -10,6 +10,9 @@ export async function GET() {
   }
 }
 
+import { getThailandNow, toThailandDate } from '@/lib/dateUtils';
+import { isBefore } from 'date-fns';
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -17,6 +20,16 @@ export async function POST(request: Request) {
 
     if (!roomId || !title || !bookerName || !bookerEmail || !startTime || !endTime) {
       return NextResponse.json({ error: 'ข้อมูลการจองไม่ครบถ้วน' }, { status: 400 });
+    }
+
+    // ตรวจสอบว่าช่วงเวลาเริ่มต้นอยู่ในอดีตหรือไม่ (อิงตามโซนเวลาประเทศไทย)
+    const bkkNow = getThailandNow();
+    const newStart = toThailandDate(startTime);
+    if (isBefore(newStart, bkkNow)) {
+      return NextResponse.json(
+        { error: 'ไม่สามารถจองช่วงเวลาในอดีตได้ครับ กรุณาเลือกช่วงเวลาปัจจุบันหรืออนาคต' },
+        { status: 400 }
+      );
     }
 
     // Default status:

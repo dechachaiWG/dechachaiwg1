@@ -85,7 +85,7 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
       </div>
 
       {/* Horizon Day Strip */}
-      <div className="grid grid-cols-7 sm:grid-cols-14 gap-1.5 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar sm:grid sm:grid-cols-14 sm:gap-1.5 pb-1 sm:pb-0">
         {nextTwoWeeks.map((date) => {
           const isSelected = isSameDay(selectedDate, date);
           const isCurrentToday = isToday(date);
@@ -94,9 +94,9 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
             <button
               key={date.toISOString()}
               onClick={() => onSelectDate(date)}
-              className={`flex flex-col items-center justify-center p-2.5 rounded-xl text-center transition-all ${
+              className={`min-w-[58px] sm:min-w-0 flex-shrink-0 sm:flex-shrink flex flex-col items-center justify-center p-2.5 rounded-xl text-center transition-all ${
                 isSelected
-                  ? 'bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-600/20 scale-102'
+                  ? 'bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-600/20 scale-102 font-semibold'
                   : isCurrentToday
                   ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/80'
                   : 'bg-stone-50 dark:bg-slate-800/80 hover:bg-stone-100 dark:hover:bg-slate-700 text-stone-700 dark:text-slate-300 border border-stone-200/60 dark:border-slate-700'

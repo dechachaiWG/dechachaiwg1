@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Room, Booking, TimeSlot, ConflictCheckResult, AuthSessionUser } from '@/lib/types';
-import { validateBookingConflict, formatThaiDate } from '@/lib/dateUtils';
+import { validateBookingConflict, formatThaiDate, getThailandNow, toThailandDate } from '@/lib/dateUtils';
 import { X, CheckCircle2, AlertTriangle, Clock, User, Mail, FileText, Calendar } from 'lucide-react';
-import { setHours, setMinutes, formatISO, parseISO, format } from 'date-fns';
+import { setHours, setMinutes, formatISO, parseISO, format, isToday, isBefore } from 'date-fns';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -38,6 +38,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       timeOptions.push(`${hh}:30`);
     }
   }
+
+  const checkIsPastTime = (timeStr: string) => {
+    const bkkNow = getThailandNow();
+    const bkkSelected = toThailandDate(selectedDate);
+    const [h, m] = timeStr.split(':').map(Number);
+    const dt = setMinutes(setHours(bkkSelected, h), m);
+    return isBefore(dt, bkkNow);
+  };
 
   const defaultStartTime = initialStartSlot
     ? format(parseISO(initialStartSlot.startTime), 'HH:mm')
@@ -156,11 +164,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onChange={(e) => setStartTimeStr(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-stone-200 dark:border-slate-700 bg-stone-50 dark:bg-slate-800 text-xs font-medium text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
                 >
-                  {timeOptions.slice(0, -1).map((t) => (
-                    <option key={t} value={t}>
-                      {t} น.
-                    </option>
-                  ))}
+                  {timeOptions.slice(0, -1).map((t) => {
+                    const isPast = checkIsPastTime(t);
+                    return (
+                      <option key={t} value={t} disabled={isPast}>
+                        {t} น. {isPast ? '(ผ่านไปแล้ว)' : ''}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -171,11 +182,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onChange={(e) => setEndTimeStr(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-stone-200 dark:border-slate-700 bg-stone-50 dark:bg-slate-800 text-xs font-medium text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
                 >
-                  {timeOptions.slice(1).map((t) => (
-                    <option key={t} value={t}>
-                      {t} น.
-                    </option>
-                  ))}
+                  {timeOptions.slice(1).map((t) => {
+                    const isPast = checkIsPastTime(t);
+                    return (
+                      <option key={t} value={t} disabled={isPast}>
+                        {t} น. {isPast ? '(ผ่านไปแล้ว)' : ''}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             </div>
